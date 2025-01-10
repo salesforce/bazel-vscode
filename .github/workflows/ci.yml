@@ -32,7 +32,7 @@ jobs:
         id: time
         uses: nanzm/get-time-action@v2.0
         with:
-          format: "YYYYMMDD_HHmm"
+          format: 'YYYYMMDD_HHmm'
 
       - name: Get Branch name for BUILD_LABEL
         id: branch_name
@@ -53,11 +53,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-#        - name: Cache IntelliJ Aspects
-#          uses: actions/cache@v4
-#          with:
-#            path: ./bundles/com.salesforce.bazel.sdk/aspects
-#            key: ${{ runner.os }}-aspects-${{ hashFiles('**/aspects/import/import-and-build.sh', '**/aspects/import/WORKSPACE') }}
+      #        - name: Cache IntelliJ Aspects
+      #          uses: actions/cache@v4
+      #          with:
+      #            path: ./bundles/com.salesforce.bazel.sdk/aspects
+      #            key: ${{ runner.os }}-aspects-${{ hashFiles('**/aspects/import/import-and-build.sh', '**/aspects/import/WORKSPACE') }}
 
       - name: Cache Bazel repository cache
         uses: actions/cache@v4
@@ -85,9 +85,9 @@ jobs:
 
       - name: 🏗 Build project
         env:
-          BUILD_ID: "${{ steps.time.outputs.time }}"
-          BUILD_TYPE: "S"
-          BUILD_LABEL: "CI ${{ steps.time.outputs.time }} (${{ steps.branch_name.outputs.branch }})"
+          BUILD_ID: '${{ steps.time.outputs.time }}'
+          BUILD_TYPE: 'S'
+          BUILD_LABEL: 'CI ${{ steps.time.outputs.time }} (${{ steps.branch_name.outputs.branch }})'
         run: npm run build
 
       - name: 🧪 Run tests
@@ -96,7 +96,7 @@ jobs:
           PRINT_JDTLS_LOGS: true
         with:
           run: npm run test
-          options: "-screen 0 1600x1200x24"
+          options: '-screen 0 1600x1200x24'
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
@@ -128,7 +128,7 @@ jobs:
           if-no-files-found: error
 
   event_file:
-    name: "Event File"
+    name: 'Event File'
     runs-on: ubuntu-latest
 
     # needed for publishing test results from forks
