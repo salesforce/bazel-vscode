@@ -1,0 +1,9 @@
+node_modules
+out
+dist
+.vscode-test/
+*.vsix
+meta.json
+stats.html
+test/result
+*.bazel.lock
