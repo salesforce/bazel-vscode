@@ -95,14 +95,6 @@ jobs:
             test/screenshots
             test/logs
 
-      - name: Upload Bazel JDT Language Server extension
-        uses: actions/upload-artifact@v4
-        if: success() && matrix.os == 'ubuntu-latest'
-        with:
-          name: server
-          path: server/
-          if-no-files-found: error
-
   event_file:
     name: "Event File"
     runs-on: ubuntu-latest
