@@ -2,9 +2,9 @@
 	"name": "bazel-vscode",
 	"displayName": "Bazel extension by Salesforce Engineering",
 	"description": "Bazel support VSCode",
-	"author": "Salesforce Engineering",
+	"author": "Salesforce OSS",
 	"license": "BSD-3-Clause",
-	"publisher": "sfdc",
+	"publisher": "sfdc-eng",
 	"version": "0.0.1",
 	"bugs": "https://github.com/salesforce/bazel-vscode/issues",
 	"engines": {
