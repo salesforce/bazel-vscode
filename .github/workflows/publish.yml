@@ -54,7 +54,7 @@ jobs:
 
       - name: 📦 Prepare packaging of pre-release extension
         if: ${{ github.event.inputs.releaseChannel == 'edge' }}
-        run: npx gulp prepare_pre_release
+        run: npx tsx prepare_pre_release.tsx
 
       - name: 🚀 Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
