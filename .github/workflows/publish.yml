@@ -57,7 +57,7 @@ jobs:
         run: npx tsx prepare_pre_release.tsx
 
       - name: 🚀 Publish to Visual Studio Marketplace
-        uses: HaaLeo/publish-vscode-extension@v1
+        uses: HaaLeo/publish-vscode-extension@v2
         id: publishToVscMktp
         with:
             preRelease: ${{ github.event.inputs.releaseChannel == 'edge' && true || false }}
