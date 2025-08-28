@@ -1,3 +1,4 @@
+import { Span } from '@opentelemetry/api';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { commands, ExtensionContext, extensions, tasks, TextDocument, window, workspace } from 'vscode';
@@ -10,6 +11,7 @@ import { BazelExtensionPlugin, BazelVscodeExtensionAPI } from './extension.api';
 import { ProjectViewManager } from './projectViewManager';
 import { BazelRunTargetProvider } from './provider/bazelRunTargetProvider';
 import { BazelTaskProvider } from './provider/bazelTaskProvider';
+import { ExtensionOtel, registerMetrics } from './tracing/extensionOtel';
 import { getWorkspaceRoot, initBazelProjectFile, isBazelWorkspaceRoot, outputLog } from './util';
 
 const workspaceRoot = getWorkspaceRoot();
@@ -23,6 +25,8 @@ export async function activate(context: ExtensionContext): Promise<BazelVscodeEx
 	// show any directories listed in the .bazelproject file
 	// fetch all projects loaded into LS and display those as well
 	// show .eclipse folder
+
+	registerMetrics(context);
 
 	window.registerTreeDataProvider(
 		'bazel.taskOutline',
@@ -114,6 +118,14 @@ export async function activate(context: ExtensionContext): Promise<BazelVscodeEx
 	// trigger a refresh of the tree view when any task get executed
 	tasks.onDidStartTask((_) => BazelRunTargetProvider.instance.refresh());
 	tasks.onDidEndTask((_) => BazelRunTargetProvider.instance.refresh());
+
+	ExtensionOtel.getInstance(context).tracer.startActiveSpan(
+		'extension.activation',
+		(span: Span) => {
+			span.addEvent('activation success');
+			span.end();
+		}
+	);
 
 	return Promise.resolve({
 		parseProjectFile: await getBazelProjectFile(),
