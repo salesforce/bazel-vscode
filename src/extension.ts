@@ -1,7 +1,7 @@
 import { Span } from '@opentelemetry/api';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { commands, ExtensionContext, extensions, tasks, TextDocument, window, workspace } from 'vscode';
+import { commands, ExtensionContext, extensions, RelativePattern, tasks, TextDocument, window, workspace } from 'vscode';
 import { getBazelProjectFile } from './bazelProjectParser';
 import { BazelServerTerminal, getBazelTerminal } from './bazelServerTerminal';
 import { BazelTaskManager } from './bazelTaskManager';
@@ -114,6 +114,15 @@ export async function activate(context: ExtensionContext): Promise<BazelVscodeEx
 	);
 
 	registerBuildifierFormatter();
+
+	// if this is a multi-root project, create a listener to refresh the symlinked project root directory on file add/remove
+	if (ProjectViewManager.isMultiRoot()) {
+		const w = workspace.createFileSystemWatcher(
+			new RelativePattern(workspaceRoot, '*')
+		);
+		w.onDidCreate((_e) => ProjectViewManager.syncWorkspaceRoot());
+		w.onDidDelete((_e) => ProjectViewManager.syncWorkspaceRoot());
+	}
 
 	// trigger a refresh of the tree view when any task get executed
 	tasks.onDidStartTask((_) => BazelRunTargetProvider.instance.refresh());
