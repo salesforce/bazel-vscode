@@ -47,11 +47,6 @@ export namespace ProjectViewManager {
 							JSON.stringify(workspaceFile, null, 2)
 						);
 
-						// cleanup all old single root workspace files
-						await workspace.fs.delete(Uri.file(`${workspaceRoot}/.vscode`), {
-							recursive: true,
-						});
-
 						// reload the window using the new workspace
 						commands.executeCommand(
 							'vscode.openFolder',
@@ -152,7 +147,7 @@ export namespace ProjectViewManager {
 				} else {
 					return {
 						uri: Uri.file(`${workspaceRoot}/${f}`),
-						name: f.replaceAll(sep, ' ⇾ '),
+						name: f === '.' ? workspaceRootName : f.replaceAll(sep, ' ⇾ '),
 					};
 				}
 			})

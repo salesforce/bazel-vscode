@@ -148,14 +148,19 @@ export function deactivate() {}
 
 function toggleBazelProjectSyncStatus(doc: TextDocument) {
 	if (workspace.getConfiguration('bazel.projectview').get('notification')) {
+
+		// check
+		const options = (getJavaExtension()) ? ['Sync View', 'Sync Java', 'Do Nothing'] : ['Sync View', 'Do Nothing'];
+
 		window
 			.showWarningMessage(
-				`The Bazel Project View changed. Do you want to synchronize?`,
-				...['Sync', 'Do Nothing']
+				`The Bazel Project View changed. Do you want to synchronize?`, ...options
 			)
 			.then((val) => {
-				if (val === 'Sync') {
+				if (val === 'Sync View') {
 					syncProjectView();
+				} else if(val === 'Sync Java') {
+					syncJava();
 				} else if (val === 'Do Nothing') {
 					workspace
 						.getConfiguration('bazel.projectview')
@@ -185,12 +190,19 @@ function openBazelProjectFile() {
 function syncProjectView(){
 	outputLog.info('syncing project');
 	ProjectViewManager.updateProjectView();
+}
 
-	// if bazel-vscode-java extension exists, execute it's sync method
-	const bazelJavaExtension = extensions.getExtension<BazelExtensionPlugin>('sfdc.bazel-vscode-java')
-	if( bazelJavaExtension ){
+function getJavaExtension(){
+	return extensions.getExtension<BazelExtensionPlugin>('sfdc-eng.bazel-java');
+}
+
+/**
+ * Run sync against the eclipse LS
+ */
+function syncJava(){
+	const bazelJavaExtension = getJavaExtension();
+	if(bazelJavaExtension) {
 		outputLog.info('syncing java project')
-		bazelJavaExtension.exports.sync()
+		bazelJavaExtension.exports.sync();
 	}
-
 }
