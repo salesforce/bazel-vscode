@@ -5,7 +5,7 @@
 	"author": "Salesforce OSS",
 	"license": "BSD-3-Clause",
 	"publisher": "sfdc-eng",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"bugs": "https://github.com/salesforce/bazel-vscode/issues",
 	"engines": {
 		"vscode": "^1.100.0"
