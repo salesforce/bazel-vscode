@@ -1,304 +1,304 @@
 {
-	"name": "bazel-vscode",
-	"displayName": "Bazel extension by Salesforce Engineering",
-	"description": "Bazel support VSCode",
-	"author": "Salesforce OSS",
-	"license": "BSD-3-Clause",
-	"publisher": "sfdc-eng",
-	"version": "0.0.2",
-	"bugs": "https://github.com/salesforce/bazel-vscode/issues",
-	"engines": {
-		"vscode": "^1.100.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/salesforce/bazel-vscode"
-	},
-	"categories": [
-		"Linters",
-		"Formatters",
-		"Snippets",
-		"Other"
-	],
-	"keywords": [
-		"multi-root ready",
-		"Bazel"
-	],
-	"activationEvents": [
-		"workspaceContains:**/*.bazelproject",
-		"workspaceContains:**/WORKSPACE",
-		"workspaceContains:**/BUILD",
-		"workspaceContains:**/*.bazel"
-	],
-	"main": "./out/src/extension.js",
-	"contributes": {
-		"languages": [
-			{
-				"id": "bazelproject",
-				"aliases": [
-					"bazelproject"
-				],
-				"extensions": [
-					".bazelproject"
-				],
-				"configuration": "./syntaxes/bazelproject-language-configuration.json"
-			},
-			{
-				"id": "starlark",
-				"aliases": [
-					"Starlark",
-					"starlark",
-					"Bazel"
-				],
-				"extensions": [
-					".BUILD",
-					".WORKSPACE",
-					".bazel",
-					".bzl",
-					".bzlmod",
-					".sky",
-					".star"
-				],
-				"filenames": [
-					"BUILD",
-					"WORKSPACE"
-				],
-				"configuration": "./syntaxes/starlark-language-configuration.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "bazelproject",
-				"scopeName": "source.bazelproject",
-				"path": "./syntaxes/bazelproject.tmLanguage.json"
-			},
-			{
-				"language": "starlark",
-				"scopeName": "source.starlark",
-				"path": "./syntaxes/starlark.tmLanguage.json"
-			}
-		],
-		"taskDefinitions": [
-			{
-				"type": "bazel",
-				"required": [
-					"name",
-					"task"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"description": "User readable bazel run target name"
-					},
-					"task": {
-						"type": "string",
-						"description": "The full bazel command to be executed"
-					}
-				}
-			}
-		],
-		"configuration": {
-			"title": "Bazel Java",
-			"properties": {
-				"bazel.import.disabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "Disable the Bazel importer.",
-					"scope": "window"
-				},
-				"bazel.log.level": {
-					"type": "string",
-					"enum": [
-						"debug",
-						"warn",
-						"info",
-						"error",
-						"trace"
-					],
-					"default": "info",
-					"description": "Configure detailed logging (debug, warn, info, error)",
-					"scope": "window"
-				},
-				"bazel.projectview.open": {
-					"type": "boolean",
-					"default": true,
-					"description": "Open the Bazel Project View file on extension activation",
-					"scope": "window"
-				},
-				"bazel.projectview.updateFileWatcherExclusion": {
-					"type": "boolean",
-					"default": true,
-					"description": "update the files.watcherExclude setting to only watch directories specified in the .bazelproject file.",
-					"scope": "window"
-				},
-				"bazel.projectview.notification": {
-					"type": "boolean",
-					"default": true,
-					"description": "Display 'sync project view' notification info window on .bazelproject edit",
-					"scope": "window"
-				},
-				"bazel.buildifier.enable": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable buildifier formatting tool on save",
-					"scope": "window"
-				},
-				"bazel.buildifier.binary": {
-					"type": [
-						"string",
-						"null"
-					],
-					"default": null,
-					"description": "path to buildifier binary. If not set buildifier from your PATH will be used",
-					"scope": "window"
-				},
-				"bazel.telemetry.endpoint": {
-					"type": [
-						"string",
-						"null"
-					],
-					"default": null,
-					"description": "OTEL endpoint to send telemetry",
-					"scope": "window"
-				},
-				"bazel.telemetry.headers": {
-					"type": [
-						"object",
-						"null"
-					],
-					"default": null,
-					"description": "OTEL headers",
-					"scope": "window"
-				}
-			}
-		},
-		"commands": [
-			{
-				"command": "bazel.sync",
-				"title": "Sync Project View",
-				"category": "Bazel"
-			},
-			{
-				"command": "bazel.taskOutline.refresh",
-				"title": "Refresh Bazel Run Configs",
-				"category": "Bazel",
-				"icon": "$(sync)"
-			},
-			{
-				"command": "bazel.taskOutline.run",
-				"title": "Run Bazel Target",
-				"category": "Bazel",
-				"icon": "$(debug-start)"
-			},
-			{
-				"command": "bazel.taskOutline.kill",
-				"title": "Kill Bazel Target",
-				"category": "Bazel",
-				"icon": "$(debug-stop)"
-			},
-			{
-				"command": "bazel.projectview.open",
-				"title": "Open the Bazel Project View file",
-				"category": "Bazel"
-			},
-			{
-				"command": "bazel.convert.workspace",
-				"title": "Convert to Multi-Root workspace",
-				"category": "Bazel"
-			}
-		],
-		"views": {
-			"explorer": [
-				{
-					"id": "bazel.taskOutline",
-					"name": "Bazel Run Targets"
-				}
-			]
-		},
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "bazel.sync"
-				},
-				{
-					"command": "bazel.taskOutline.refresh",
-					"when": "false"
-				},
-				{
-					"command": "bazel.taskOutline.run",
-					"when": "false"
-				},
-				{
-					"command": "bazel.taskOutline.kill",
-					"when": "false"
-				},
-				{
-					"command": "bazel.projectview.open",
-					"when": "isBazelWorkspaceRoot"
-				}
-			],
-			"view/title": [
-				{
-					"command": "bazel.taskOutline.refresh",
-					"when": "view == bazel.taskOutline",
-					"group": "navigation@1"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "bazel.taskOutline.run",
-					"when": "view == bazel.taskOutline && viewItem == task",
-					"group": "inline@1"
-				},
-				{
-					"command": "bazel.taskOutline.kill",
-					"when": "view == bazel.taskOutline && viewItem == runningTask",
-					"group": "inline@2"
-				}
-			]
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "run-s clean esbuild:base -- --minify",
-		"build": "run-s clean esbuild:base",
-		"clean": "rm -rf out meta.json stats.html *.vsix",
-		"esbuild:base": "tsx build.ts",
-		"esbuild:watch": "npm run esbuild:base -- --sourcemap --watch",
-		"analyze": "npm run esbuild:base -- --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
-		"lint": "eslint src --ext ts",
-		"lint:fix": "eslint src --ext ts --fix",
-		"test": "run-s clean test:*",
-		"test:compile": "tsc -b ./test/tsconfig.json",
-		"test:lint": "eslint --ext .js,.ts,.tsx src",
-		"test:extension": "vscode-test",
-		"package": "run-s clean build vsce:package",
-		"vsce:package": "npx vsce package --no-dependencies"
-	},
-	"devDependencies": {
-		"@types/glob": "^8.1.0",
-		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.15.22",
-		"@types/vscode": "^1.100.0",
-		"@typescript-eslint/eslint-plugin": "^8.34.0",
-		"@typescript-eslint/parser": "^8.34.0",
-		"@vscode/test-cli": "^0.0.11",
-		"@vscode/test-electron": "^2.5.2",
-		"@vscode/vsce": "^3.5.0",
-		"eslint": "^9.29.0",
-		"glob": "^11.1.0",
-		"mocha": "^11.6.0",
-		"npm-run-all": "^4.1.5",
-		"tsx": "^4.20.3",
-		"typescript": "^5.8.3"
-	},
-	"dependencies": {
-		"@opentelemetry/api": "^1.9.0",
-		"@opentelemetry/exporter-metrics-otlp-proto": "^0.203.0",
-		"@opentelemetry/exporter-trace-otlp-proto": "^0.203.0",
-		"@opentelemetry/resources": "^2.0.1",
-		"@opentelemetry/sdk-metrics": "^2.0.1",
-		"@opentelemetry/sdk-trace-web": "^2.0.1",
-		"@opentelemetry/semantic-conventions": "^1.36.0",
-		"fast-xml-parser": "^4.4.1"
-	}
+  "name": "bazel-vscode",
+  "displayName": "Bazel extension by Salesforce Engineering",
+  "description": "Bazel support VSCode",
+  "author": "Salesforce OSS",
+  "license": "BSD-3-Clause",
+  "publisher": "sfdc-eng",
+  "version": "0.0.3",
+  "bugs": "https://github.com/salesforce/bazel-vscode/issues",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salesforce/bazel-vscode"
+  },
+  "categories": [
+    "Linters",
+    "Formatters",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "multi-root ready",
+    "Bazel"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*.bazelproject",
+    "workspaceContains:**/WORKSPACE",
+    "workspaceContains:**/BUILD",
+    "workspaceContains:**/*.bazel"
+  ],
+  "main": "./out/src/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "bazelproject",
+        "aliases": [
+          "bazelproject"
+        ],
+        "extensions": [
+          ".bazelproject"
+        ],
+        "configuration": "./syntaxes/bazelproject-language-configuration.json"
+      },
+      {
+        "id": "starlark",
+        "aliases": [
+          "Starlark",
+          "starlark",
+          "Bazel"
+        ],
+        "extensions": [
+          ".BUILD",
+          ".WORKSPACE",
+          ".bazel",
+          ".bzl",
+          ".bzlmod",
+          ".sky",
+          ".star"
+        ],
+        "filenames": [
+          "BUILD",
+          "WORKSPACE"
+        ],
+        "configuration": "./syntaxes/starlark-language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bazelproject",
+        "scopeName": "source.bazelproject",
+        "path": "./syntaxes/bazelproject.tmLanguage.json"
+      },
+      {
+        "language": "starlark",
+        "scopeName": "source.starlark",
+        "path": "./syntaxes/starlark.tmLanguage.json"
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "bazel",
+        "required": [
+          "name",
+          "task"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User readable bazel run target name"
+          },
+          "task": {
+            "type": "string",
+            "description": "The full bazel command to be executed"
+          }
+        }
+      }
+    ],
+    "configuration": {
+      "title": "Bazel Java",
+      "properties": {
+        "bazel.import.disabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable the Bazel importer.",
+          "scope": "window"
+        },
+        "bazel.log.level": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "warn",
+            "info",
+            "error",
+            "trace"
+          ],
+          "default": "info",
+          "description": "Configure detailed logging (debug, warn, info, error)",
+          "scope": "window"
+        },
+        "bazel.projectview.open": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the Bazel Project View file on extension activation",
+          "scope": "window"
+        },
+        "bazel.projectview.updateFileWatcherExclusion": {
+          "type": "boolean",
+          "default": true,
+          "description": "update the files.watcherExclude setting to only watch directories specified in the .bazelproject file.",
+          "scope": "window"
+        },
+        "bazel.projectview.notification": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display 'sync project view' notification info window on .bazelproject edit",
+          "scope": "window"
+        },
+        "bazel.buildifier.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable buildifier formatting tool on save",
+          "scope": "window"
+        },
+        "bazel.buildifier.binary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "path to buildifier binary. If not set buildifier from your PATH will be used",
+          "scope": "window"
+        },
+        "bazel.telemetry.endpoint": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "OTEL endpoint to send telemetry",
+          "scope": "window"
+        },
+        "bazel.telemetry.headers": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "default": null,
+          "description": "OTEL headers",
+          "scope": "window"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "bazel.sync",
+        "title": "Sync Project View",
+        "category": "Bazel"
+      },
+      {
+        "command": "bazel.taskOutline.refresh",
+        "title": "Refresh Bazel Run Configs",
+        "category": "Bazel",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "bazel.taskOutline.run",
+        "title": "Run Bazel Target",
+        "category": "Bazel",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "bazel.taskOutline.kill",
+        "title": "Kill Bazel Target",
+        "category": "Bazel",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "bazel.projectview.open",
+        "title": "Open the Bazel Project View file",
+        "category": "Bazel"
+      },
+      {
+        "command": "bazel.convert.workspace",
+        "title": "Convert to Multi-Root workspace",
+        "category": "Bazel"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "bazel.taskOutline",
+          "name": "Bazel Run Targets"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "bazel.sync"
+        },
+        {
+          "command": "bazel.taskOutline.refresh",
+          "when": "false"
+        },
+        {
+          "command": "bazel.taskOutline.run",
+          "when": "false"
+        },
+        {
+          "command": "bazel.taskOutline.kill",
+          "when": "false"
+        },
+        {
+          "command": "bazel.projectview.open",
+          "when": "isBazelWorkspaceRoot"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "bazel.taskOutline.refresh",
+          "when": "view == bazel.taskOutline",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "bazel.taskOutline.run",
+          "when": "view == bazel.taskOutline && viewItem == task",
+          "group": "inline@1"
+        },
+        {
+          "command": "bazel.taskOutline.kill",
+          "when": "view == bazel.taskOutline && viewItem == runningTask",
+          "group": "inline@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "run-s clean esbuild:base -- --minify",
+    "build": "run-s clean esbuild:base",
+    "clean": "rm -rf out meta.json stats.html *.vsix",
+    "esbuild:base": "tsx build.ts",
+    "esbuild:watch": "npm run esbuild:base -- --sourcemap --watch",
+    "analyze": "npm run esbuild:base -- --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
+    "test": "run-s clean test:*",
+    "test:compile": "tsc -b ./test/tsconfig.json",
+    "test:lint": "eslint --ext .js,.ts,.tsx src",
+    "test:extension": "vscode-test",
+    "package": "run-s clean build vsce:package",
+    "vsce:package": "npx vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.22",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.5.0",
+    "eslint": "^9.29.0",
+    "glob": "^11.1.0",
+    "mocha": "^11.6.0",
+    "npm-run-all": "^4.1.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-metrics-otlp-proto": "^0.203.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.203.0",
+    "@opentelemetry/resources": "^2.0.1",
+    "@opentelemetry/sdk-metrics": "^2.0.1",
+    "@opentelemetry/sdk-trace-web": "^2.0.1",
+    "@opentelemetry/semantic-conventions": "^1.36.0",
+    "fast-xml-parser": "^4.4.1"
+  }
 }
