@@ -23,6 +23,7 @@ import {
 	ATTR_SERVICE_VERSION,
 } from '@opentelemetry/semantic-conventions';
 import {
+	env,
 	ExtensionContext,
 	TextDocument,
 	workspace,
@@ -49,6 +50,7 @@ export class ExtensionOtel {
 	private _meter: Meter;
 	private _fileOpenCounter: Counter;
 	private _fileSaveCounter: Counter;
+	private _javaSyncCounter: Counter;
 
 	private constructor(ctx: ExtensionContext) {
 		this._context = ctx;
@@ -101,9 +103,12 @@ export class ExtensionOtel {
 		this._fileOpenCounter = this._meter.createCounter('file.opened', {
 			unit: 'lang',
 		});
+
 		this._fileSaveCounter = this._meter.createCounter('file.saved', {
 			unit: 'lang',
 		});
+
+		this._javaSyncCounter = this._meter.createCounter('bazel.java.sync');
 	}
 
 	private get endpoint() {
@@ -153,18 +158,24 @@ export class ExtensionOtel {
 	public get fileSaveCounter() {
 		return this._fileSaveCounter;
 	}
+
+	public get javaSyncCounter() {
+		return this._javaSyncCounter;
+	}
 }
 
 export function registerMetrics(context: ExtensionContext) {
 	workspace.onDidOpenTextDocument((e: TextDocument) => {
 		ExtensionOtel.getInstance(context).fileOpenCounter.add(1, {
 			lang: e.languageId,
+			ide: env.appName
 		});
 	});
 
 	workspace.onDidSaveTextDocument((e: TextDocument) => {
 		ExtensionOtel.getInstance(context).fileSaveCounter.add(1, {
 			lang: e.languageId,
+			ide: env.appName,
 		});
 	});
 }

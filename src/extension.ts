@@ -1,7 +1,7 @@
 import { Span } from '@opentelemetry/api';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { commands, ExtensionContext, extensions, RelativePattern, tasks, TextDocument, window, workspace } from 'vscode';
+import { commands, env, ExtensionContext, extensions, RelativePattern, tasks, TextDocument, window, workspace } from 'vscode';
 import { getBazelProjectFile } from './bazelProjectParser';
 import { BazelServerTerminal, getBazelTerminal } from './bazelServerTerminal';
 import { BazelTaskManager } from './bazelTaskManager';
@@ -11,7 +11,7 @@ import { BazelExtensionPlugin, BazelVscodeExtensionAPI } from './extension.api';
 import { ProjectViewManager } from './projectViewManager';
 import { BazelRunTargetProvider } from './provider/bazelRunTargetProvider';
 import { BazelTaskProvider } from './provider/bazelTaskProvider';
-import { ExtensionOtel, registerMetrics } from './tracing/extensionOtel';
+import { ExtensionOtel, registerMetrics, } from './tracing/extensionOtel';
 import { getWorkspaceRoot, initBazelProjectFile, isBazelWorkspaceRoot, outputLog } from './util';
 
 const workspaceRoot = getWorkspaceRoot();
@@ -38,7 +38,7 @@ export async function activate(context: ExtensionContext): Promise<BazelVscodeEx
 
 	workspace.onDidSaveTextDocument((doc) => {
 		if (doc.fileName.includes('bazelproject')) {
-			toggleBazelProjectSyncStatus(doc);
+			toggleBazelProjectSyncStatus(doc, context);
 		}
 	});
 
@@ -146,20 +146,26 @@ export async function activate(context: ExtensionContext): Promise<BazelVscodeEx
 export function deactivate() {}
 
 
-function toggleBazelProjectSyncStatus(doc: TextDocument) {
+function toggleBazelProjectSyncStatus(
+	doc: TextDocument,
+	ctx: ExtensionContext
+) {
 	if (workspace.getConfiguration('bazel.projectview').get('notification')) {
-
 		// check
-		const options = (getJavaExtension()) ? ['Sync View', 'Sync Java', 'Do Nothing'] : ['Sync View', 'Do Nothing'];
+		const options = getJavaExtension()
+			? ['Sync View', 'Sync Java', 'Do Nothing']
+			: ['Sync View', 'Do Nothing'];
 
 		window
 			.showWarningMessage(
-				`The Bazel Project View changed. Do you want to synchronize?`, ...options
+				`The Bazel Project View changed. Do you want to synchronize?`,
+				...options
 			)
 			.then((val) => {
 				if (val === 'Sync View') {
 					syncProjectView();
-				} else if(val === 'Sync Java') {
+				} else if (val === 'Sync Java') {
+					ExtensionOtel.getInstance(ctx).javaSyncCounter.add(1, {ide: env.appName});
 					syncJava();
 				} else if (val === 'Do Nothing') {
 					workspace
@@ -202,7 +208,7 @@ function getJavaExtension(){
 function syncJava(){
 	const bazelJavaExtension = getJavaExtension();
 	if(bazelJavaExtension) {
-		outputLog.info('syncing java project')
+		outputLog.info('syncing java project');
 		bazelJavaExtension.exports.sync();
 	}
 }
